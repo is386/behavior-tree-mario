@@ -11,16 +11,17 @@ public class BehaviorTree {
         tasks = new ArrayList<Task>();
     }
 
-    public void insert(Sequence seq) {
-        tasks.add(seq);
+    public void insert(Task t) {
+        tasks.add(t);
     }
 
     public void run(BTAgent mario) {
         Task t;
         for (int i = 0; i < tasks.size(); i++) {
             t = tasks.get(i);
-            if (t.run(mario))
+            if (t.run(mario)) {
                 break;
+            }
         }
     }
 

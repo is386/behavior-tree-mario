@@ -7,7 +7,7 @@ public class IsEnemyInFront implements Task {
 
     @Override
     public boolean run(BTAgent mario) {
-        return mario.isEnemyInFront();
+        return mario.isEnemyInFront(1);
     }
 
 }

@@ -3,11 +3,14 @@ package ch.idsia.agents.controllers;
 import ch.idsia.behavior.BehaviorTree;
 import ch.idsia.behavior.Selector;
 import ch.idsia.behavior.Sequence;
-import ch.idsia.behavior.actions.Fire;
 import ch.idsia.behavior.actions.Jump;
+import ch.idsia.behavior.actions.MoveLeft;
 import ch.idsia.behavior.actions.MoveRight;
+import ch.idsia.behavior.actions.Shoot;
 import ch.idsia.behavior.conditions.IsEnemyInFront;
+import ch.idsia.behavior.conditions.IsEnemyInFrontLeft;
 import ch.idsia.behavior.conditions.IsEnemyInRange;
+import ch.idsia.behavior.conditions.IsEnemyInRangeLeft;
 import ch.idsia.behavior.conditions.IsObstacleInFront;
 import ch.idsia.benchmark.mario.engine.sprites.Sprite;
 import ch.idsia.benchmark.mario.environments.Environment;
@@ -21,13 +24,14 @@ public class BTAgent extends BasicMarioAIAgent {
     public BTAgent() {
         super("BT Agent");
         reset();
+
+        Selector sel1 = new Selector();
+
+        sel1.insert(new IsObstacleInFront());
+        sel1.insert(new IsEnemyInFront());
+
         Sequence seq = new Sequence();
-        Selector sel = new Selector();
-
-        sel.insert(new IsObstacleInFront());
-        sel.insert(new IsEnemyInFront());
-
-        seq.insert(sel);
+        seq.insert(sel1);
         seq.insert(new Jump());
 
         Sequence seq2 = new Sequence();
@@ -36,13 +40,31 @@ public class BTAgent extends BasicMarioAIAgent {
 
         Sequence seq3 = new Sequence();
         seq3.insert(new IsEnemyInRange());
-        seq3.insert(new Fire());
+        seq3.insert(new Shoot());
 
         Sequence seq4 = new Sequence();
         seq4.insert(seq2);
         seq4.insert(seq3);
 
-        tree.insert(seq4);
+        Sequence seq5 = new Sequence();
+        seq5.insert(new IsEnemyInRangeLeft());
+        seq5.insert(new MoveLeft());
+        seq5.insert(new Shoot());
+
+        Sequence seq6 = new Sequence();
+        seq6.insert(new IsEnemyInFrontLeft());
+        seq6.insert(new MoveLeft());
+        seq6.insert(new Jump());
+
+        Selector sel3 = new Selector();
+        sel3.insert(seq6);
+        sel3.insert(seq5);
+
+        Selector sel2 = new Selector();
+        sel2.insert(sel3);
+        sel2.insert(seq4);
+
+        tree.insert(sel2);
     }
 
     public boolean isObstacleInFront() {
@@ -67,22 +89,26 @@ public class BTAgent extends BasicMarioAIAgent {
         return false;
     }
 
-    public boolean isEnemyInFront() {
+    public boolean isEnemyInFront(int dir) {
         int x = marioEgoRow;
         int y = marioEgoCol;
         for (int i = 0; i < lookAhead; i++) {
-            if (isCreature(enemies[x][y + i]) || isCreature(enemies[x + 1][y + i]) || isCreature(enemies[x + 2][y + i]))
+            int j = i * dir;
+            if (isCreature(enemies[x][y + j]) || isCreature(enemies[x + 1][y + j]) || isCreature(enemies[x + 2][y + j]))
                 return isMarioAbleToJump || !isMarioOnGround;
         }
         return false;
     }
 
-    public boolean isEnemyInRange() {
+    public boolean isEnemyInRange(int dir) {
         int x = marioEgoRow;
         int y = marioEgoCol;
         for (int i = 0; i < fireRange; i++) {
-            if (isCreature(enemies[x][y + i]) || isCreature(enemies[x + 1][y + i]) || isCreature(enemies[x + 2][y + i]))
-                return isMarioAbleToShoot;
+            int j = i * dir;
+            if ((isCreature(enemies[x][y + j]) && levelScene[x][y + j] == 0)
+                    || (isCreature(enemies[x + 1][y + j]) && levelScene[x + 1][y + j] == 0)
+                    || (isCreature(enemies[x + 2][y + j]) && levelScene[x + 2][y + j] == 0))
+                return marioMode == 2;
         }
         return false;
     }

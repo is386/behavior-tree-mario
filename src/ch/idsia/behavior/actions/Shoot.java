@@ -4,10 +4,12 @@ import ch.idsia.agents.controllers.BTAgent;
 import ch.idsia.behavior.Task;
 import ch.idsia.benchmark.mario.engine.sprites.Mario;
 
-public class Jump implements Task {
+public class Shoot implements Task {
+
     @Override
     public boolean run(BTAgent mario) {
-        mario.setAction(Mario.KEY_JUMP);
+        mario.setAction(Mario.KEY_SPEED);
         return true;
     }
+
 }
