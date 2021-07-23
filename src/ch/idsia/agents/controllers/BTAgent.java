@@ -57,8 +57,8 @@ public class BTAgent extends BasicMarioAIAgent {
         seq6.insert(new Jump());
 
         Selector sel3 = new Selector();
-        sel3.insert(seq6);
         sel3.insert(seq5);
+        sel3.insert(seq6);
 
         Selector sel2 = new Selector();
         sel2.insert(sel3);
