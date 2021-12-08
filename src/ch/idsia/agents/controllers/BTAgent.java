@@ -29,6 +29,7 @@ public class BTAgent extends BasicMarioAIAgent {
     private boolean isCreature(int c) {
         switch (c) {
             case Sprite.KIND_GOOMBA:
+            case Sprite.KIND_GOOMBA_WINGED:
             case Sprite.KIND_RED_KOOPA:
             case Sprite.KIND_RED_KOOPA_WINGED:
             case Sprite.KIND_GREEN_KOOPA_WINGED:
